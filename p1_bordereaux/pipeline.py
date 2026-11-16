@@ -8,6 +8,7 @@ CANON = {"policyref":"ref","policy_no":"ref","ref":"ref",
          "grosspremium":"prem","premium_gbp":"prem","premium":"prem",
          "currency":"ccy","ccy":"ccy"}
 DATE_FORMATS = ["%d/%m/%Y","%Y-%m-%d","%d-%b-%Y"]
+HERE = os.path.dirname(os.path.abspath(__file__))  # so the script runs from any folder
 
 def parse_date(s):
     for f in DATE_FORMATS:
@@ -24,9 +25,9 @@ def ingest(path):
     df["name"] = df["name"].astype("string").str.strip()
     return df
 
-def run(outdir="out"):
+def run(outdir=os.path.join(HERE, "out")):
     os.makedirs(outdir, exist_ok=True)
-    raw = pd.concat([ingest(p) for p in sorted(glob.glob("data_*.csv"))], ignore_index=True)
+    raw = pd.concat([ingest(p) for p in sorted(glob.glob(os.path.join(HERE, "data_*.csv")))], ignore_index=True)
     raw.to_csv(f"{outdir}/standardised.csv", index=False)
     return raw
 

@@ -1,10 +1,11 @@
 """Spawns the server over stdio as an MCP client and checks the tools end to end."""
-import asyncio, json, sys
+import asyncio, json, os, sys
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+SERVER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.py")  # runs from any folder
 
 async def main():
-    params = StdioServerParameters(command=sys.executable, args=["server.py"])
+    params = StdioServerParameters(command=sys.executable, args=[SERVER])
     async with stdio_client(params) as (r, w):
         async with ClientSession(r, w) as s:
             await s.initialize()

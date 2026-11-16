@@ -1,4 +1,6 @@
 # Insurance Operations Automation - Portfolio Projects
+[![tests](https://github.com/babitha0305/insurance-ops-automation-portfolio/actions/workflows/tests.yml/badge.svg)](https://github.com/babitha0305/insurance-ops-automation-portfolio/actions/workflows/tests.yml)
+
 Seven small projects built around insurance-ops automation: four core data/ops projects, plus three that expose the same controls to AI agents. **All data is synthetic** (generated in code); no real partner or customer data.
 
 ## Core insurance-ops projects
@@ -25,8 +27,14 @@ Seven small projects built around insurance-ops automation: four core data/ops p
 | p6 | Tool routing on 500 held-out queries: untrained 35%, keyword rules 87%, REINFORCE 100%; context packing uses 92% fewer tokens with 92% recall of the needed chunk |
 | p7 | 6/6 hook tests pass |
 
-## Requirements
-Python 3.10+, pandas, scikit-learn, numpy; `mcp<2` for p5.
+## Setup and tests
+Requires Python 3.10+ (CI runs 3.11 and 3.13).
+```bash
+pip install -r requirements.txt
+python p1_bordereaux/pipeline.py              # scripts can be run from any folder
+python -m unittest discover tests -v          # runs every project and checks the results above
+```
+Tests run automatically on GitHub Actions on every push (badge at the top).
 
 ## Limitations
 - Synthetic data with injected errors, so perfect detection scores reflect the test setup, not real-world performance.

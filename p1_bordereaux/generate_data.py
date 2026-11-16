@@ -1,7 +1,8 @@
 """Generate synthetic monthly bordereaux from 3 partners with different layouts
 and injected data-quality problems (ground truth saved for later evaluation)."""
-import random, json
+import random, json, os
 import pandas as pd
+HERE = os.path.dirname(os.path.abspath(__file__))  # so the script runs from any folder
 random.seed(42)
 N = 300
 partners = {
@@ -34,7 +35,7 @@ for p, cfg in partners.items():
     out = df.copy()
     out["date"] = pd.to_datetime(out["date"]).dt.strftime(cfg["datefmt"])
     out.columns = cfg["cols"]
-    out.to_csv(f"data_{p}.csv", index=False)
+    out.to_csv(os.path.join(HERE, f"data_{p}.csv"), index=False)
     truth.append({"partner":p,"ledger_total":ledger_total,"issues":issues})
-json.dump(truth, open("truth.json","w"), default=str, indent=1)
+json.dump(truth, open(os.path.join(HERE, "truth.json"),"w"), default=str, indent=1)
 print("generated", len(partners), "partner files")

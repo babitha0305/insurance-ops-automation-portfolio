@@ -1,7 +1,8 @@
 """Tests the hook scripts by feeding them the JSON Claude Code sends on stdin."""
 import json, subprocess, sys, tempfile, os
+HOOKS = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".claude", "hooks")  # runs from any folder
 def run(script, payload):
-    r = subprocess.run([sys.executable, f".claude/hooks/{script}"], input=json.dumps(payload), capture_output=True, text=True)
+    r = subprocess.run([sys.executable, os.path.join(HOOKS, script)], input=json.dumps(payload), capture_output=True, text=True)
     return r.returncode, r.stderr.strip()
 cases = [
  ("block_protected.py", {"tool_name":"Write","tool_input":{"file_path":"p1_bordereaux/data_AlphaIns.csv"}}, 2),
@@ -17,3 +18,4 @@ for s, p, want in cases:
     code, err = run(s, p); ok += code == want
     print(f"{s:20} {p['tool_input']['file_path'][-28:]:28} exit={code} expected={want} {'OK' if code==want else 'FAIL'}")
 print(f"{ok}/{len(cases)} hook tests passed"); os.unlink(bad.name); os.unlink(good.name)
+sys.exit(0 if ok == len(cases) else 1)  # non-zero exit fails CI

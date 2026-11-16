@@ -1,7 +1,8 @@
 """Reusable data-quality controls + ledger reconciliation for standardised bordereaux.
 Run:  python dq_checks.py   (expects ../p1_bordereaux/out/standardised.csv and truth.json)"""
-import json, pandas as pd
-P1 = "../p1_bordereaux/"
+import json, os, pandas as pd
+HERE = os.path.dirname(os.path.abspath(__file__))  # so the script runs from any folder
+P1 = os.path.join(HERE, "..", "p1_bordereaux", "")
 VALID_CCY = {"GBP"}
 
 def check_duplicates(df):  return df[df.duplicated(["partner","ref"], keep="first")][["partner","ref"]].assign(issue="duplicate")
@@ -31,7 +32,7 @@ if __name__ == "__main__":
     df = pd.read_csv(P1 + "out/standardised.csv")
     truth = json.load(open(P1 + "truth.json"))
     flags = run_all(df)
-    flags.to_csv("flagged_records.csv", index=False)
+    flags.to_csv(os.path.join(HERE, "flagged_records.csv"), index=False)
     actual = {(t["partner"], i[0], i[1]) for t in truth for i in t["issues"]}
     pred = {(r.partner, r.issue, r.ref) for r in flags.itertuples()}
     tp = len(actual & pred); prec = tp/len(pred); rec = tp/len(actual)

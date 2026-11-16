@@ -2,7 +2,7 @@
 Classifies synthetic complaint emails (TF-IDF + logistic regression), extracts a booking reference,
 auto-routes confident predictions and sends low-confidence ones to a human review queue.
 The classifier is pluggable: swap `predict_proba` for an LLM call to extend it."""
-import random, re
+import random, re, os
 import numpy as np, pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         print(f"{th:>9} | {100*len(auto)/len(te):>12.1f} | {(auto.pred==auto.label).mean():>22.3f} | {100*(1-len(auto)/len(te)):>14.1f}")
     TH = 0.6
     queue = te[te.conf < TH][["email", "pred", "conf"]]
-    queue.to_csv("human_review_queue.csv", index=False)
+    queue.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "human_review_queue.csv"), index=False)
     refs = te["email"].str.contains(r"BK\d{6}")
     ok = (te.ref.notna() == refs).mean()
     print(f"Review queue saved ({len(queue)} emails at threshold {TH}); booking-ref extraction agreement {ok:.3f}")
